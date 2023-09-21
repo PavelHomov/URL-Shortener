@@ -1,9 +1,16 @@
 from datetime import datetime
-
-from flask import url_for
+from random import choices
+from re import fullmatch
+from string import ascii_letters, digits
 
 from yacut import db
-from yacut.constants import SHORT_ID_VALID_MAX
+from yacut.constants import SHORT_ID_VALID_MAX, SHORT_ID_SYM, PATTERN, ORIGINAL_LINK_LENGTH
+from yacut.error_handlers import (
+    ShortIsBadException,
+    ShortIsExistsException,
+    GeneratedShortException,
+    URLMapException,
+)
 
 
 class URLMap(db.Model):
@@ -17,15 +24,44 @@ class URLMap(db.Model):
     )
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
+    @staticmethod
     def get(short_link):
+        """Получить объект модели."""
         return URLMap.query.filter_by(short=short_link).first()
 
-    def from_dict(self, data):
-        self.original = data['url']
-        self.short = data['custom_id']
+    @staticmethod
+    def short_validator(short):
+        """Валидация короткой ссылки."""
+        if len(short) > SHORT_ID_VALID_MAX:
+            raise ShortIsBadException('Не соответствует разрешенной длине!')
+        if not fullmatch(PATTERN, short):
+            raise ShortIsBadException('Использованы запрещенные символы!')
+        if URLMap.get(short):
+            raise ShortIsExistsException('Такое имя уже существует!')
+        return short
 
-    def to_dict(self):
-        return dict(
-            url=self.original,
-            short_link=url_for('redirect_view', link=self.short, _external=True)
+    @staticmethod
+    def short_link_generator():
+        """Получить случайное short id."""
+        while True:
+            short_id = ''.join(choices(ascii_letters + digits, k=SHORT_ID_SYM))
+            if not URLMap.query.filter_by(short=short_id).first():
+                return short_id
+            raise GeneratedShortException('Не удалось создать имя!')
+
+    @staticmethod
+    def db_writer(original_link, short, do_validate=False):
+        """Если валидация пройдена, происходит сохранение в БД."""
+        if do_validate and (len(original_link) > ORIGINAL_LINK_LENGTH):
+            raise URLMapException('Ссылка первышает допустимый размер!')
+        if short is None or short == '':
+            short = URLMap.short_link_generator()
+        elif do_validate:
+            URLMap.short_validator(short)
+        url_map = URLMap(
+            original=original_link,
+            short=short
         )
+        db.session.add(url_map)
+        db.session.commit()
+        return url_map

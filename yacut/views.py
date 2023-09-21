@@ -1,31 +1,34 @@
-from flask import abort, flash, redirect, render_template, request
+from flask import abort, flash, redirect, render_template, url_for
 
-from . import app, db
+from . import app
+from .error_handlers import URLMapException
 from .forms import LinkForm
 from .models import URLMap
-from .utils import get_unique_short_id, database_save
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index_view():
     """Вью функция главной страницы."""
     form = LinkForm()
-    if form.validate_on_submit():
-        custom_id = form.custom_id.data
-        if not custom_id:
-            custom_id = get_unique_short_id()
-        elif URLMap.query.filter_by(short=custom_id).first():
-            flash(f'Имя {custom_id} уже занято!')
-            return render_template('main.html', form=form)
-        url_map = URLMap(
-            original=form.original_link.data,
-            short=custom_id,
+    if not form.validate_on_submit():
+        return render_template('main.html', form=form)
+    original_link = form.original_link.data
+    short_link = form.custom_id.data
+    try:
+        link_record = URLMap().db_writer(
+            original_link, short_link
         )
-        database_save(url_map)
-        flash(f'Ваша новая ссылка готова: '
-              f'<a href="{request.base_url}{custom_id}">'
-              f'{request.base_url}{custom_id}</a>')
-    return render_template('main.html', form=form)
+    except URLMapException:
+        flash(f'Имя {short_link} уже занято!')
+        return render_template('main.html', form=form)
+    full_short_link = url_for(
+        'redirect_view', link=link_record.short, _external=True
+    )
+    return render_template(
+        'main.html',
+        form=form,
+        full_short_link=full_short_link,
+    )
 
 
 @app.route('/<path:link>')

@@ -5,6 +5,22 @@ from flask import jsonify, render_template
 from . import app, db
 
 
+class URLMapException(Exception):
+    pass
+
+
+class ShortIsBadException(URLMapException):
+    pass
+
+
+class ShortIsExistsException(URLMapException):
+    pass
+
+
+class GeneratedShortException(URLMapException):
+    pass
+
+
 class InvalidAPIUsage(Exception):
     """Класс исключений для API."""
     status_code = HTTPStatus.BAD_REQUEST

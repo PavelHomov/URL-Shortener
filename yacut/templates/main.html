@@ -49,6 +49,9 @@
                   {% endfor %}
                 {% endif %}
               {% endwith %}
+                  {% if full_short_link %}
+                      Новая ссылка: <a href="{{ full_short_link }}">{{ full_short_link }}</a>
+                  {% endif %}
             </h5>
           </div>
           <div class="col-sm">
