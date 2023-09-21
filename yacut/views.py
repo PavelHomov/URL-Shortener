@@ -1,9 +1,9 @@
-from flask import flash, redirect, render_template, request
+from flask import abort, flash, redirect, render_template, request
 
 from . import app, db
 from .forms import LinkForm
 from .models import URLMap
-from .utils import get_unique_short_id
+from .utils import get_unique_short_id, database_save
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -21,8 +21,7 @@ def index_view():
             original=form.original_link.data,
             short=custom_id,
         )
-        db.session.add(url_map)
-        db.session.commit()
+        database_save(url_map)
         flash(f'Ваша новая ссылка готова: '
               f'<a href="{request.base_url}{custom_id}">'
               f'{request.base_url}{custom_id}</a>')
@@ -32,5 +31,7 @@ def index_view():
 @app.route('/<path:link>')
 def redirect_view(link):
     """Вью функция редиректа."""
-    link = URLMap.query.filter_by(short=link).first_or_404()
-    return redirect(link.original)
+    link_database = URLMap.get(link)
+    if link_database is None:
+        abort(404)
+    return redirect(link_database.original)
