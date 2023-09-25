@@ -8,7 +8,6 @@ from yacut.constants import SHORT_ID_VALID_MAX, SHORT_ID_SYM, PATTERN, ORIGINAL_
 from yacut.error_handlers import (
     ShortIsBadException,
     ShortIsExistsException,
-    GeneratedShortException,
     URLMapException,
 )
 
@@ -45,16 +44,15 @@ class URLMap(db.Model):
         """Получить случайное short id."""
         while True:
             short_id = ''.join(choices(ascii_letters + digits, k=SHORT_ID_SYM))
-            if not URLMap.query.filter_by(short=short_id).first():
+            if not URLMap.get():
                 return short_id
-            raise GeneratedShortException('Не удалось создать имя!')
 
     @staticmethod
-    def db_writer(original_link, short, do_validate=False):
+    def short_creator(original_link, short, do_validate=False):
         """Если валидация пройдена, происходит сохранение в БД."""
         if do_validate and (len(original_link) > ORIGINAL_LINK_LENGTH):
             raise URLMapException('Ссылка первышает допустимый размер!')
-        if short is None or short == '':
+        if not short:
             short = URLMap.short_link_generator()
         elif do_validate:
             URLMap.short_validator(short)

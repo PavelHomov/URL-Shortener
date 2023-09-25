@@ -24,7 +24,7 @@ def add_link():
         raise InvalidAPIUsage('"url" является обязательным полем!')
     short = data.get('custom_id')
     try:
-        link_record = URLMap().db_writer(long_url, short, do_validate=True)
+        link_record = URLMap().short_creator(long_url, short, do_validate=True)
     except ShortIsExistsException:
         raise InvalidAPIUsage(f'Имя "{short}" уже занято.')
     except ShortIsBadException:

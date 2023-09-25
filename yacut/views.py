@@ -15,7 +15,7 @@ def index_view():
     original_link = form.original_link.data
     short_link = form.custom_id.data
     try:
-        link_record = URLMap().db_writer(
+        link_record = URLMap().short_creator(
             original_link, short_link
         )
     except URLMapException:
