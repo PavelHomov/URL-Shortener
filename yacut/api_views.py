@@ -5,7 +5,6 @@ from flask import jsonify, request, url_for
 from . import app
 from .error_handlers import (
     InvalidAPIUsage,
-    GeneratedShortException,
     ShortIsBadException,
     ShortIsExistsException,
 )
@@ -29,8 +28,6 @@ def add_link():
         raise InvalidAPIUsage(f'Имя "{short}" уже занято.')
     except ShortIsBadException:
         raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
-    except GeneratedShortException:
-        raise InvalidAPIUsage('Ошибка генерации имени, повторите попытку')
     return jsonify(dict(
         url=long_url,
         short_link=url_for(
