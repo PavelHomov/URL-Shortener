@@ -44,7 +44,7 @@ class URLMap(db.Model):
         """Получить случайное short id."""
         while True:
             short_id = ''.join(choices(ascii_letters + digits, k=SHORT_ID_SYM))
-            if not URLMap.get():
+            if not URLMap.get(short_id):
                 return short_id
 
     @staticmethod
