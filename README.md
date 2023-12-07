@@ -22,7 +22,7 @@ git clone git@github.com:PavelHomov/URL-Shortener.git
 ```
 
 ```
-cd yacut
+cd URL-Shortener
 ```
 
 Cоздать и активировать виртуальное окружение:
