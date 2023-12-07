@@ -67,6 +67,8 @@ DATABASE_URI=sqlite:///db.sqlite3
 ```
 Создать базу данных:
 ```
+flask db init
+flask db migrate
 flask db upgrade
 Либо вручную через оболочку Flask
 ```

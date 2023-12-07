@@ -14,5 +14,10 @@ ENV FLASK_ENV=development
 ENV SECRET_KEY=MY_SECRET_KEY
 ENV DATABASE_URI=sqlite:///db.sqlite3
 
+RUN flask db init
+RUN flask db migrate
+RUN flask db upgrade
+
+
 CMD ["flask", "run", "--host=0.0.0.0"]
 
