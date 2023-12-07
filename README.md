@@ -14,6 +14,7 @@ docker run -it --rm -p 5000:5000 flask-app
 Проект будет доступен по адресу <b>127.0.0.1:5000</b>
 
 ## Запуск
+
 Клонировать репозиторий и перейти в него в командной строке:
 
 ```
@@ -49,8 +50,14 @@ python3 -m pip install --upgrade pip
 ```
 
 ```
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
+
+Для запуска проекта не в Docker дополнительно к зависимостям нужно установить greenlet
+```
+pip3 install greenlet
+```
+
 Создать файл .env с переменными окружения. Пример наполнения:
 ```
 FLASK_APP=url_shortener
