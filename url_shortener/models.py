@@ -3,9 +3,9 @@ from random import choices
 from re import fullmatch
 from string import ascii_letters, digits
 
-from yacut import db
-from yacut.constants import SHORT_ID_VALID_MAX, SHORT_ID_SYM, PATTERN, ORIGINAL_LINK_LENGTH
-from yacut.error_handlers import (
+from url_shortener import db
+from url_shortener.constants import SHORT_ID_VALID_MAX, SHORT_ID_SYM, PATTERN, ORIGINAL_LINK_LENGTH
+from url_shortener.error_handlers import (
     ShortIsBadException,
     ShortIsExistsException,
     URLMapException,
