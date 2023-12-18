@@ -53,7 +53,8 @@ python3 -m pip install --upgrade pip
 pip3 install -r requirements.txt
 ```
 
-Для запуска проекта не в Docker дополнительно к зависимостям нужно установить greenlet
+Для запуска проекта не в Docker дополнительно к зависимостям нужно установить greenlet 
+(не в requirements.txt т.к. на Apple процессорах greenlet вызывает проблемы с другими зависимостями)
 ```
 pip3 install greenlet
 ```
